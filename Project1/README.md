@@ -10,7 +10,7 @@ Design Choices
 
 I structured the command shell as a single C program, breaking down the main functionality into clear and distinct functions. This separation makes the code easier to read, understand, and maintain as I could identify and modify functions not working as intended. Here are some key components of my code:
 
--  Command Handling: Functions like “cd”, “pwd”, “echo”, “env”, and “setenv” provide the core functionality for built-in commands.
+- Command Handling: Functions like “cd”, “pwd”, “echo”, “env”, and “setenv” provide the core functionality for built-in commands.
 - Command Parsing: The “tokenize_commandLine” function is responsible for breaking down user input into manageable arguments. This function simplifies the command processing logic.
 - Process Management: The “execute_command” function is responsible for creating a new process to run the specified command, while “handle_pipe” and “handle_redirection” manage input/output redirection and piping between commands.
 
@@ -38,7 +38,7 @@ The setenv_command function parses a name-value pair to set environment variable
 Using strtok, this function splits user input into tokens based on delimiters. It populates an array with these tokens while ensuring proper null termination. This method efficiently prepares input for further processing, maintaining clarity and ease of use.
 
 8. is_background_command
-This function checks if the last argument is &, indicating a background command. If found, it adjusts the argument list accordingly. This simple check allows users to easily specify background tasks, contributing to a more streamlined execution process.
+This function checks if the last argument is &, indicating a background command. If found, it adjusts the argument list accordingly. This simple check allows users to easily specify background tasks, contributing to a more streamlined execution process. Validated using sleep 5 &.
 
 9. execute_command
 The execute_command function handles command execution using execvp, with input and output redirection based on provided file descriptors. By centralizing command execution logic, it ensures versatility and provides robust error handling for execution failures.
@@ -47,7 +47,7 @@ The execute_command function handles command execution using execvp, with input 
 This function scans for input (<) and output (>) redirection symbols in command arguments, opening the specified files for reading or writing. By modifying the arguments array and ensuring proper null termination, it simplifies the management of stream redirection for subsequent command execution.
 
 11. handle_pipe
-The handle_pipe function creates a pipe and forks two child processes to set up communication between them. It effectively manages input/output redirection using the pipe, allowing for complex command sequences while maintaining resource efficiency by closing unused pipe ends. (This was the hardest to implement since grep was working, validated my function using cat test.txt | sort, ls | wc -l, cat test.txt | uniq -c)
+The handle_pipe function creates a pipe and forks two child processes to set up communication between them. It effectively manages input/output redirection using the pipe, allowing for complex command sequences while maintaining resource efficiency by closing unused pipe ends. (This was the hardest to implement since grep was not working, validated my function using cat test.txt | sort, ls | wc -l, cat test.txt | uniq -c)
 
 12. main
 The main function orchestrates the interpreter's core logic, managing user input, command parsing, and function execution. By integrating signal handling and process management, it ensures a smooth and responsive user experience, allowing for effective interaction with the CLI. 
