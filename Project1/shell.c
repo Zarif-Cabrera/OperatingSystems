@@ -262,7 +262,7 @@ int main() {
         int pipe_index = -1;
         int i;
         for (i = 0; i < argc; i++) {
-            if (strcmp(arguments[i], "|") == 0) {
+            if (arguments[i] != NULL && strcmp(arguments[i], "|") == 0) {
                 pipe_index = i;
                 break;
             }
