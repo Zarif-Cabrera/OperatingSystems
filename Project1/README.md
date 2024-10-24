@@ -38,7 +38,7 @@ The setenv_command function parses a name-value pair to set environment variable
 Using strtok, this function splits user input into tokens based on delimiters. It populates an array with these tokens while ensuring proper null termination. This method efficiently prepares input for further processing, maintaining clarity and ease of use.
 
 8. is_background_command
-This function checks if the last argument is &, indicating a background command. If found, it adjusts the argument list accordingly. This simple check allows users to easily specify background tasks, contributing to a more streamlined execution process. Validated using sleep 5 &. I ran into issues after adding piping code due to strcmp trying to read NULL (no arguments), but I fixed by adding, arguments[i] != NULL, to conditional on line 265.
+This function checks if the last argument is &, indicating a background command. If found, it adjusts the argument list accordingly. This simple check allows users to easily specify background tasks, contributing to a more streamlined execution process. Validated using sleep 5 &. I ran into issues after adding piping code due to strcmp trying to read NULL (no arguments), but I fixed by adding, arguments[i] != NULL, to conditional on line 299.
 
 9. execute_command
 The execute_command function handles command execution using execvp, with input and output redirection based on provided file descriptors. By centralizing command execution logic, it ensures versatility and provides robust error handling for execution failures.
@@ -58,11 +58,11 @@ I aimed for clarity in the code by using clear function names, inline comments, 
 
 1. Function Documentation: Each function has a comment explaining its purpose, parameters, and expected behavior. This documentation helps anyone reviewing the code quickly understand what each part does without diving too deep into the implementation.
 
-2. Error Handling: I made sure to include error handling for functions that interact with system calls (like `chdir`, `open`, and `execvp`). When a failure occurs, the program prints a descriptive error message to `stderr`, so users are aware of any issues that arise.
+2. Error Handling: I made sure to include error handling for functions that interact with system calls (like "chdir", "open", and "execvp"). When a failure occurs, the program prints a descriptive error message to "stderr", so users are aware of any issues that arise.
 
-3. Constants and Macros: I defined constants like `MAX_COMMAND_LINE_LEN`, `MAX_COMMAND_LINE_ARGS`, and `TIMEOUT_SECONDS` at the top of the file. This centralizes configuration and makes it easy to adjust parameters as needed.
+3. Constants: I defined constants like "MAX_COMMAND_LINE_LEN", "MAX_COMMAND_LINE_ARGS", and "TIMEOUT_SECONDS" at the top of the file. This centralizes configuration and makes it easy to adjust parameters as needed.
 
-4. Global Variables: The global variable `foreground_pid` tracks the currently executing foreground process. While using a global variable can be a point of contention, I believe it’s justified here for managing process control and signaling effectively.
+4. Global Variables: The global variable "foreground_pid" tracks the currently executing foreground process. I believe it makes sense to use for managing process control and signaling effectively.
 
 5. Signal Handlers: The signal handlers are documented to indicate their purpose, which clarifies how the program responds to user interrupts and timeouts.
 
