@@ -1,0 +1,4 @@
+another line of text
+before this time
+this line contains the word this
+yet another line
