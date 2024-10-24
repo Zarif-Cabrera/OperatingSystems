@@ -19,10 +19,15 @@ extern char **environ;
 // Global variable to store the PID of the foreground process
 pid_t foreground_pid = -1;
 
+// Intercepts the SIGINT signal (triggered by pressing Ctrl+C) 
+// to prevent the shell from terminating, allowing it to continue running
 void sigint_handler(int signo) {
     // Do nothing; just return to the prompt
 }
 
+// Handles the SIGALRM signal by terminating the foreground process
+// (if one is running) that exceeds a specified timeout, prints a 
+// message about the termination, and resets the foreground process ID.
 void sigalrm_handler(int signo) {
     if (foreground_pid > 0) {
         // Kill the foreground process if it exceeds the timeout
@@ -32,12 +37,15 @@ void sigalrm_handler(int signo) {
     }
 }
 
+// Retrieves current working directory and updates shell prompt to display it followed by a ">"
 void update_prompt() {
     char cwd[MAX_COMMAND_LINE_LEN];
     getcwd(cwd, sizeof(cwd));
     snprintf(prompt, sizeof(prompt), "%s> ", cwd);
 }
 
+// Takes in specified path and changes current working directory
+// to that path. Prints error message if no path or if change fails
 void cd(char *path) {
     if (path) {
         if (chdir(path) != 0) {
@@ -48,12 +56,16 @@ void cd(char *path) {
     }
 }
 
+// Retrieves and prints the current working output
 void pwd() {
     char cwd[MAX_COMMAND_LINE_LEN];
     getcwd(cwd, sizeof(cwd));
     printf("%s\n", cwd);
 }
 
+// Takes in arguments and prints them out. It handles environment
+// variables prefixed with "$" by retrieving values with getenv. 
+// Also ensures proper spacing between items
 void echo(char **arguments) {
     int i;
     for (i = 1; arguments[i] != NULL; i++) {
@@ -75,6 +87,9 @@ void echo(char **arguments) {
     printf("\n"); // Newline at the end
 }
 
+// Takes in environment variable and prints out the value.
+// If no environment variable given, prints all environment 
+// variables currently set in environment
 void env(char **arguments) {
     if (arguments[1] != NULL) {
         char *value = getenv(arguments[1]);
@@ -91,6 +106,9 @@ void env(char **arguments) {
     }
 }
 
+// Sets environment variable using format NAME=VALUE.
+// Extracts variable name and value from input string by
+// splitting on "=". If incorrect format, print error message
 void setenv_command(char *name_value) {
     char *equal_sign = strchr(name_value, '=');
     if (equal_sign) {
@@ -103,6 +121,9 @@ void setenv_command(char *name_value) {
     }
 }
 
+// Splits input command line string into individual arguments based on 
+// specified delimiters and stores them in an array
+// Returns the total number of arguments passed
 int tokenize_commandLine(char *command_line, char **arguments) {
     int argc = 0;
     char *token = strtok(command_line, delimiters);
@@ -115,6 +136,9 @@ int tokenize_commandLine(char *command_line, char **arguments) {
     return argc;
 }
 
+// Checks if the last argument in command line is "&" to determine
+// if the command should be run in the background. It removes
+// the "&" from the arguments array and return true if present, false if not
 bool is_background_command(char **arguments, int argc) {
     if (argc > 0 && strcmp(arguments[argc - 1], "&") == 0) {
         arguments[--argc] = NULL;
@@ -123,6 +147,9 @@ bool is_background_command(char **arguments, int argc) {
     return false;
 }
 
+// Redirects standard input and output file descriptors if 
+// necessary then executes the command specified
+// A little redundant since I already defined most commands, but covers gaps
 void execute_command(char **arguments, int input_fd, int output_fd) {
     // Redirect input and output if necessary
     if (input_fd != 0) {
@@ -138,6 +165,9 @@ void execute_command(char **arguments, int input_fd, int output_fd) {
     exit(EXIT_FAILURE); // Exit if exec fails
 }
 
+// Takes an array of arguments and two pointers to manage input and output
+// redirection by parsing arguments for redirection operators ("<",">")
+// Open specified files, updates file descriptors and NULL terminates the arguments
 void handle_redirection(char **arguments, int *input_fd, int *output_fd) {
     int i;
     for (i = 0; arguments[i] != NULL; i++) {
@@ -161,6 +191,10 @@ void handle_redirection(char **arguments, int *input_fd, int *output_fd) {
     }
 }
 
+// Manages the execution of two commands connected by pipe. 
+// Takes in array of arguments and pipe_index to identify location of the pipe operator 
+// Creates a pipe, forks 2 child process to execute left and right commands while 
+// redirecting their standard input and output to the pipe. Waits for both child processes to complete.
 void handle_pipe(char **arguments, int pipe_index) {
     int pipe_fd[2];
     pid_t pid1, pid2;
