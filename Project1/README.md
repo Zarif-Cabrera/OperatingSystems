@@ -38,7 +38,7 @@ The setenv_command function parses a name-value pair to set environment variable
 Using strtok, this function splits user input into tokens based on delimiters. It populates an array with these tokens while ensuring proper null termination. This method efficiently prepares input for further processing, maintaining clarity and ease of use.
 
 8. is_background_command
-This function checks if the last argument is &, indicating a background command. If found, it adjusts the argument list accordingly. This simple check allows users to easily specify background tasks, contributing to a more streamlined execution process. Validated using sleep 5 &.
+This function checks if the last argument is &, indicating a background command. If found, it adjusts the argument list accordingly. This simple check allows users to easily specify background tasks, contributing to a more streamlined execution process. Validated using sleep 5 &. I ran into issues after adding piping code due to strcmp trying to read NULL (no arguments), but I fixed by adding, arguments[i] != NULL, to conditional on line 265.
 
 9. execute_command
 The execute_command function handles command execution using execvp, with input and output redirection based on provided file descriptors. By centralizing command execution logic, it ensures versatility and provides robust error handling for execution failures.
